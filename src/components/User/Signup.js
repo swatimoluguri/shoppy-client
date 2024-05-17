@@ -3,7 +3,6 @@ import Heading from "../Partials/Heading";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../../utils/UserSlice";
@@ -74,16 +73,16 @@ const Signup = () => {
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(formData.password, 10);
-    const userData = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      password: hashedPassword,
-    };
+    // const hashedPassword = await bcrypt.hash(formData.password, 10);
+    // const userData = {
+    //   firstName: formData.firstName,
+    //   lastName: formData.lastName,
+    //   email: formData.email,
+    //   password: hashedPassword,
+    // };
     await axios
       .post(`${apiUrl}/sign-up`, {
-        formData: userData,
+        formData,
         cart,
       })
       .then((response) => {

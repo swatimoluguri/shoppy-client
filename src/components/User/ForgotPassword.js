@@ -2,7 +2,6 @@ import Clothes from "../../assets/clothes.jpg";
 import Heading from "../Partials/Heading";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -172,10 +171,10 @@ const ForgotPassword = () => {
         }
       }
       setError(null);
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      // const hashedPassword = await bcrypt.hash(newPassword, 10);
       await axios
         .post(`${apiUrl}/change-password`, {
-          newPassword: hashedPassword,
+          newPassword,
           email,
         })
         .then((response) => {
