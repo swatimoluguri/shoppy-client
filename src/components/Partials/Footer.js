@@ -20,28 +20,28 @@ const Footer = () => {
         </div>
         <div className="flex flex-col gap-3 mb-10 lg:mb-0">
           <h2 className="font-bold text-lg lg:text-xl mb-4">Company</h2>
-          <Link to="#"><p className="hover:text-app-yellow">About Us</p></Link>
-          <Link to="#"><p className="hover:text-app-yellow">Blog</p></Link>
-          <Link to="#"><p className="hover:text-app-yellow">Contact Us</p></Link>
-          <Link to="#"><p className="hover:text-app-yellow">Career</p></Link>
+          <Link to="/about"><p className="hover:text-app-yellow">About Us</p></Link>
+          <Link to="/signup"><p className="hover:text-app-yellow">My Account</p></Link>
+          <Link to="/contact"><p className="hover:text-app-yellow">Contact Us</p></Link>
+          <Link to="/faq"><p className="hover:text-app-yellow">FAQ</p></Link>
         </div>
         <div className="flex flex-col gap-3 mb-10 lg:mb-0">
           <h2 className="font-bold text-lg lg:text-xl mb-4">Customer Service</h2>
-          <Link to="#"><p className="hover:text-app-yellow">My Account</p></Link>
-          <Link to="#"><p className="hover:text-app-yellow">Track my Order</p></Link>
-          <Link to="#"><p className="hover:text-app-yellow">Return</p></Link>
-          <Link to="#"><p className="hover:text-app-yellow">FAQ</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Loren Ipsum</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Loren Ipsum</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Loren Ipsum</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Loren Ipsum</p></Link>
         </div>
         <div className="flex flex-col gap-3">
           <h2 className="font-bold text-lg lg:text-xl mb-4">Important Links</h2>
-          <Link to="#"><p className="hover:text-app-yellow">Privacy</p></Link>
-          <Link to="#"><p className="hover:text-app-yellow">User Terms and Conditions</p></Link>
-          <Link to="#"><p className="hover:text-app-yellow">Return Policy</p></Link>
-          <Link to="#"><p className="hover:text-app-yellow">Settings</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Loren Ipsum</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Loren Ipsum</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Loren Ipsum</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Loren Ipsum</p></Link>
         </div>
       </div>
       <div className="bg-app-yellow h-12 flex items-center px-6 lg:px-20 text-black font-semibold text-center lg:text-left">
-        <p className="w-full">Copyright &#169; 2024 Shoppy. All Rights Reserved.</p>
+        <p className="w-full">Copyright &#169; 2024 Shoppy, by Swati Moluguri</p>
       </div>
     </div>
   );

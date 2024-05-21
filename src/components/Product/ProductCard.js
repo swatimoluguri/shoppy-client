@@ -47,7 +47,7 @@ const ProductCard = ({ filter }) => {
                 <div className="flex flex-col justify-between h-full">
                   <div className="px-2 sm:px-4 flex-grow">
                     <div className="flex justify-between items-center py-1">
-                      <p className="text-gray-500 md:text-lg text-xs overflow-hidden whitespace-nowrap text-ellipsis">
+                      <p className="hidden md:block text-gray-500 md:text-lg text-xs overflow-hidden whitespace-nowrap text-ellipsis">
                         {item.category}
                       </p>
                       <div className="flex items-center">

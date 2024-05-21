@@ -4,8 +4,19 @@ import Jenny from "../../assets/people/Jenny.jpg";
 import Jacob from "../../assets/people/jacob.jpg";
 import John from "../../assets/people/john.jpg";
 import Awards from "./Awards";
+import { useEffect } from "react";
 
 const About = () => {
+  useEffect(() => {
+    const scrollToTop = () => {
+      const c = document.documentElement.scrollTop || document.body.scrollTop;
+      if (c > 0) {
+        window.requestAnimationFrame(scrollToTop);
+        window.scrollTo(0, c - c / 8);
+      }
+    };
+    scrollToTop();
+  }, []);
   const cards = [
     {
       name: "Jenny Alexander",

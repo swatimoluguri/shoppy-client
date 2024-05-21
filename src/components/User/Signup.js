@@ -33,6 +33,16 @@ const Signup = () => {
     if (user?.user?.username?.length > 0) navigate("/");
   }, [user]);
 
+  useEffect(() => {
+    const scrollToTop = () => {
+      const c = document.documentElement.scrollTop || document.body.scrollTop;
+      if (c > 0) {
+        window.requestAnimationFrame(scrollToTop);
+        window.scrollTo(0, c - c / 8);
+      }
+    };
+    scrollToTop();
+  }, []);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -216,7 +226,7 @@ const Signup = () => {
         </div>
 
         <div className="lg:block hidden w-1/3 lg:my-auto">
-          <img className="rounded-2xl" src={Clothes} />
+          <img className="rounded-2xl" src={Clothes} alt="clothes"/>
         </div>
       </div>
     </div>

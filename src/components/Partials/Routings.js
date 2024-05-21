@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Homepage from "../Homepage/Homepage";
 import Products from "../Product/Products";
 import ProductView from "../Product/ProductView";
@@ -11,6 +11,7 @@ import Contact from "../Contact/Contact";
 import About from "../Contact/About";
 import ForgotPassword from "../User/ForgotPassword";
 import UserAccount from "../User/UserAccount";
+import Faq from "../Homepage/Faq";
 
 const Routings = () => {
   return (
@@ -27,6 +28,7 @@ const Routings = () => {
       <Route path="/about" element={<About />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/myAccount" element={<UserAccount />} />
+      <Route path="/faq" element={<Faq />} />
     </Routes>
   );
 };

@@ -1,7 +1,6 @@
 import Heading from "../Partials/Heading";
 import DetailsStrip from "../Partials/DetailsStrip";
-import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState,useEffect} from "react";
 import axios from "axios";
 import SocialMedia from "../Partials/SocialMedia";
 
@@ -15,6 +14,16 @@ const Contact = () => {
   const [enquiry, setEnquiry] = useState(null);
   const apiUrl = process.env.REACT_APP_API_URL || "";
 
+  useEffect(() => {
+    const scrollToTop = () => {
+      const c = document.documentElement.scrollTop || document.body.scrollTop;
+      if (c > 0) {
+        window.requestAnimationFrame(scrollToTop);
+        window.scrollTo(0, c - c / 8);
+      }
+    };
+    scrollToTop();
+  }, []);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -167,6 +176,7 @@ const Contact = () => {
         allowFullScreen=""
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
+        title="location"
       ></iframe>
       </div>
       <DetailsStrip />
