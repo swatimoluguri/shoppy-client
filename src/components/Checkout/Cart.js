@@ -8,7 +8,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import DetailsStrip from "../Partials/DetailsStrip";
 import EmptyCart from "../../assets/empty-cart.jpg";
 import axios from "axios";
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
@@ -19,10 +19,12 @@ const Cart = () => {
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
   const apiUrl = process.env.REACT_APP_API_URL || "";
+  const razorpayKey=process.env.REACT_APP_RAZORPAY_KEY || "";
+  const exchangePrice = useSelector((store) => store.price);
 
   const cartTotalAmt = useMemo(() => {
     return cart.cart.items.reduce((acc, item) => {
-      return acc + Math.round(item.price * 84) * item.count;
+      return acc + item.price * exchangePrice.price * item.count;
     }, 0);
   }, [cart.cart.items]);
 
@@ -33,7 +35,7 @@ const Cart = () => {
   }, [cart.cart.items]);
 
   useEffect(() => {
-    setCartTotal(cartTotalAmt);
+    setCartTotal(Math.round(cartTotalAmt));
     setCartItems(cartItemsCount);
   }, [cartTotalAmt, cartItemsCount]);
 
@@ -97,25 +99,24 @@ const Cart = () => {
     });
 
     var options = {
-      key: "rzp_test_vorhZ7wKh3AFzX",
+      key: razorpayKey,
       amount: cartTotal * 100,
       currency: "INR",
-      name: "Swati",
-      description: "Test",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRY7zpT4pHNb8LZfnaP0xI7FYTkiZaYfPUhEaV1scVsQ&s",
+      name: "Ship-Shop-Shoppy",
+      description: "Test Payment",
+      image:`${process.env.PUBLIC_URL}/logo192.png`,
       order_id: id,
       callback_url: `${apiUrl}/checkout/payment-verification`,
       prefill: {
-        name: "Gaurav Kumar",
-        email: "gaurav.kumar@example.com",
+        name: user?.user?.username,
+        email: "test@example.com",
         contact: "9000090000",
       },
       notes: {
         address: "Razorpay Corporate Office",
       },
       theme: {
-        color: "#3399cc",
+        color: "#214A25",
       },
     };
 
@@ -133,70 +134,177 @@ const Cart = () => {
       }, 0) > 0 ? (
         <div className="flex xl:flex-row flex-col my-12 mx-auto xl:mx-24 justify-around">
           <div className="w-11/12 xl:w-1/2 xl:mx-0 mx-auto">
-            <table className="w-full ">
-              <thead>
-                <tr className="bg-app-yellow text-md xl:text-lg font-semibold text-center">
-                  <td className="rounded-l-lg p-3">Product</td>
-                  <td className=" p-3">Price</td>
-                  <td className="p-3">Quantity</td>
-                  <td className=" p-3">Subtotal</td>
-                  <td className="rounded-r-lg p-3"></td>
-                </tr>
-              </thead>
-              <tbody>
-                {cart.cart.items.map((item, index) => (
-                  <tr key={index} className="border-b border-gray-200">
-                    <td className="p-2 xl:p-3 flex items-center gap-2 xl:gap-6">
-                      <Link to={"/products/" + item._id} key={item._id}>
-                        <div className=" h-16 w-14 xl:h-28 xl:w-20 rounded-lg xl:rounded-3xl">
-                          <img
-                            className="object-contain w-full h-full rounded-lg xl:rounded-3xl"
-                            src={item.image}
-                            alt={item._id}
+            {/* For medium screens */}
+            <div className="hidden md:block">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-app-yellow text-md xl:text-lg font-semibold text-center">
+                    <td className="rounded-l-lg p-3">Product</td>
+                    <td className="p-3">Price</td>
+                    <td className="p-3">Quantity</td>
+                    <td className="p-3">Subtotal</td>
+                    <td className="rounded-r-lg p-3"></td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cart.cart.items.map((item, index) => (
+                    <tr key={index} className="border-b border-gray-200">
+                      <td className="p-2 xl:p-3 flex items-center gap-2 xl:gap-6">
+                        <Link to={"/products/" + item._id} key={item._id}>
+                          <div className="h-16 w-14 xl:h-28 xl:w-20 rounded-lg xl:rounded-3xl">
+                            <img
+                              className="object-contain w-full h-full rounded-lg xl:rounded-3xl"
+                              src={item.image}
+                              alt={item._id}
+                            />
+                          </div>
+                        </Link>
+                        {item.title}
+                      </td>
+                      <td className="p-2 xl:p-3 text-right">
+                      {(item.price * exchangePrice.price).toLocaleString(
+                            "en-IN",
+                            {
+                              style: "currency",
+                              currency: "INR",
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                            }
+                          )}
+                      </td>
+                      <td className="p-2 xl:p-3 ">
+                        <div className="w-fit border border-gray-200 rounded-full flex items-center mx-auto text-black  gap-2 xl:gap-5">
+                          <div
+                            className="cursor-pointer border-r border-gray-200 px-2 py-1 xl:px-4 xl:py-2"
+                            onClick={() => handleReduceCount(item.id)}
+                          >
+                            -
+                          </div>
+                          <div>{item.count}</div>
+                          <div
+                            className="cursor-pointer border-l border-gray-200 px-2 py-1 xl:px-4 xl:py-2"
+                            onClick={() => handleAddCount(item.id)}
+                          >
+                            +
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-2 xl:p-3 text-right">
+                      {(
+                            item.price *
+                            exchangePrice.price *
+                            item.count
+                          ).toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR",
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })}
+                      </td>
+                      <td className="p-2 xl:p-3">
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          <FontAwesomeIcon
+                            key={index}
+                            className="text-app-green"
+                            icon={faTrash}
                           />
                         </div>
-                      </Link>
-                      {item.title}
-                    </td>
-                    <td className=" p-2 xl:p-3 text-right">
-                      ₹{Math.round(item.price * 84)}
-                    </td>
-                    <td className="p-2 xl:p-3 ">
-                      <div className="w-fit border border-gray-200 rounded-full flex items-center text-black  gap-2 xl:gap-5">
-                        <div
-                          className="cursor-pointer border-r border-gray-200 px-2 py-1 xl:px-4 xl:py-2"
-                          onClick={() => handleReduceCount(item.id)}
-                        >
-                          -
-                        </div>
-                        <div>{item.count}</div>
-                        <div
-                          className="cursor-pointer border-l border-gray-200 px-2 py-1 xl:px-4 xl:py-2"
-                          onClick={() => handleAddCount(item.id)}
-                        >
-                          +
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-2 xl:p-3 text-right">
-                      ₹{Math.round(item.price * 84) * item.count}
-                    </td>
-                    <td className="p-2 xl:p-3">
-                      <div
-                        className="cursor-pointer"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        <FontAwesomeIcon
-                          key={index}
-                          className="text-app-green"
-                          icon={faTrash}
-                        />
-                      </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="block md:hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-app-yellow text-md font-semibold text-center">
+                    <td colSpan="4" className="rounded-l-lg rounded-r-lg p-3">
+                      Cart Details
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {cart.cart.items.map((item, index) => (
+                    <React.Fragment key={index}>
+                      <tr>
+                        <td className="p-2 flex items-center gap-2">
+                          <Link to={"/products/" + item._id}>
+                            <div className="h-16 w-14 rounded-lg ">
+                              <img
+                                className="object-contain w-full h-full rounded-lg "
+                                src={item.image}
+                                alt={item._id}
+                              />
+                            </div>
+                          </Link>
+                        </td>
+                        <td colSpan="3">{item.title}</td>
+                      </tr>
+                      <tr className="border-b border-gray-200">
+                        <td className="p-2 text-right">
+                          {(item.price * exchangePrice.price).toLocaleString(
+                            "en-IN",
+                            {
+                              style: "currency",
+                              currency: "INR",
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                            }
+                          )}
+                        </td>
+                        <td className="p-2 ">
+                          <div className="w-fit border border-gray-200 rounded-full flex items-center mx-auto text-black gap-2 ">
+                            <div
+                              className="cursor-pointer border-r border-gray-200 px-2 py-1"
+                              onClick={() => handleReduceCount(item.id)}
+                            >
+                              -
+                            </div>
+                            <div>{item.count}</div>
+                            <div
+                              className="cursor-pointer border-l border-gray-200 px-2 py-1 "
+                              onClick={() => handleAddCount(item.id)}
+                            >
+                              +
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-2 text-right">
+                          {(
+                            item.price *
+                            exchangePrice.price *
+                            item.count
+                          ).toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR",
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })}
+                        </td>
+                        <td className="p-2 ">
+                          <div
+                            className="cursor-pointer"
+                            onClick={() => handleDelete(item.id)}
+                          >
+                            <FontAwesomeIcon
+                              key={index}
+                              className="text-app-green"
+                              icon={faTrash}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
             <div className="text-red-500 text-right mt-4 text-sm">
               Max Quantity for each product is 5
             </div>
@@ -228,11 +336,19 @@ const Cart = () => {
                 <tr>
                   <th className="text-left p-2">Sub Total</th>
                   <td className="text-right p-2">
-                    ₹
-                    {cart.cart.items.reduce((acc, item) => {
-                      acc += Math.round(item.price * 84) * item.count;
-                      return acc;
-                    }, 0)}
+                    {cart.cart.items
+                      .reduce((acc, item) => {
+                        acc +=
+                          Math.round(item.price * exchangePrice.price) *
+                          item.count;
+                        return acc;
+                      }, 0)
+                      .toLocaleString("en-IN", {
+                        style: "currency",
+                        currency: "INR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })}
                   </td>
                 </tr>
                 <tr>
@@ -244,7 +360,14 @@ const Cart = () => {
             <hr className="my-4" />
             <div className="flex justify-between p-4">
               <div>Total</div>
-              <div>₹{cartTotal}</div>
+              <div>
+                {cartTotal.toLocaleString("en-IN", {
+                  style: "currency",
+                  currency: "INR",
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })}
+              </div>
             </div>
             <div
               onClick={() =>

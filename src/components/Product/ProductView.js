@@ -4,7 +4,6 @@ import DetailsStrip from "../Partials/DetailsStrip";
 import Heading from "../Partials/Heading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faHeart,
   faStar as solidStar,
   faStarHalfAlt,
   faShoppingCart,
@@ -24,6 +23,7 @@ const ProductView = () => {
   const [loading, setLoading] = useState(true);
   const user = useSelector((store) => store.user);
   const apiUrl = process.env.REACT_APP_API_URL || "";
+  const exchangePrice = useSelector((store) => store.price);
 
   useEffect(() => {
     fetchProduct(productId);
@@ -66,13 +66,11 @@ const ProductView = () => {
     item.count = count;
     dispatch(addItem(item));
     if (user?.user?.username?.length > 0) {
-      const token=user.user.token;
-      await axios.post(
-        `${apiUrl}/add-cart`,
-        {
-          item,token
-        }
-      );
+      const token = user.user.token;
+      await axios.post(`${apiUrl}/add-cart`, {
+        item,
+        token,
+      });
     }
   }
 
@@ -103,13 +101,14 @@ const ProductView = () => {
               />
             </div>
             <div className="w-9/12 md:w-1/2 mx-auto md:ml-10 flex flex-col  gap-4  ">
-              <p className=" text-gray-500">{product.category}</p>
-              <div className="flex justify-between items-center">
-                <h1 className="w-2/3 text-xl font-bold">{product.title}</h1>
-                <div className="mx-4 rounded-full border border-green-500 text-green-500 bg-green-50 px-2 py-1">
+              <div className="flex justify-start items-center">
+                <p className=" text-gray-500">{product.category}</p>
+                <div className="mx-8 rounded-full border border-green-500 text-green-500 bg-green-50 px-2 py-1">
                   In Stock
                 </div>
               </div>
+              <h1 className="w-full text-xl font-bold">{product.title}</h1>
+
               <div className="flex items-center">
                 {[...Array(5)].map((_, index) => {
                   let starIcon;
@@ -137,7 +136,15 @@ const ProductView = () => {
               </div>
               <div>
                 <h1 className="text-4xl font-bold">
-                  ₹{Math.round(product.price * 84)}
+                  {(product.price * exchangePrice.price).toLocaleString(
+                    "en-IN",
+                    {
+                      style: "currency",
+                      currency: "INR",
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    }
+                  )}
                 </h1>
               </div>
               <div className="w-full md:w-2/3 text-gray-500 text-justify">

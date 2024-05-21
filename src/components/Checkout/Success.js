@@ -8,12 +8,14 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import DetailsStrip from "../Partials/DetailsStrip";
+import { useSelector } from "react-redux";
 
 const Success = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const [order, setOrder] = useState(null);
   const apiUrl = process.env.REACT_APP_API_URL || "";
+  const exchangePrice = useSelector((store) => store.price);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -57,22 +59,30 @@ const Success = () => {
             The order will reach you shortly. Thank you
           </h2>
         </div>
-        <div className="mt-10 w-5/6 mx-auto bg-app-yellow rounded-xl flex justify-around py-4 md:text-lg text-xs">
-          <div className="flex flex-col ">
+        
+        <div className="mt-10 w-5/6 mx-auto bg-app-yellow rounded-xl flex md:flex-row flex-col items-center md:items-start justify-around py-4">
+          <div className="flex flex-col items-center md:items-start ">
             <p className="text-app-green">Order Id</p>
             <h3 className="font-semibold">#{order.order_id.split("_")[1]}</h3>
           </div>
-          <div className=" flex-col md:flex hidden">
+          <div className="flex flex-col items-center md:items-start md:mt-0 mt-4">
             <p className="text-app-green">Amount</p>
-            <h3 className="font-semibold">₹{order.amount}</h3>
+            <h3 className="font-semibold">
+              {order.amount.toLocaleString("en-IN", {
+                style: "currency",
+                currency: "INR",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}
+            </h3>
           </div>
-          <div className="flex flex-col">
-            <p className="text-app-green">Transanction Id</p>
+          <div className="flex flex-col items-center md:items-start md:mt-0 mt-4">
+            <p className="text-app-green">Transaction Id</p>
             <h3 className="font-semibold">
               {order.razorpay_payment_id.split("_")[1]}
             </h3>
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center md:items-start md:mt-0 mt-4">
             <p className="text-app-green">Estimated Delivery</p>
             <h3 className="font-semibold">{order.order_date}</h3>
           </div>
@@ -102,7 +112,16 @@ const Success = () => {
                 </td>
 
                 <td className="p-3 text-right">
-                  ₹{Math.round(item.price * 84) * item.count}
+                  {(
+                    item.price *
+                    exchangePrice.price *
+                    item.count
+                  ).toLocaleString("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })}
                 </td>
               </tr>
             ))}
@@ -113,7 +132,12 @@ const Success = () => {
             <tr>
               <td className="font-bold text-right text-xl p-2">Total</td>
               <td className="font-bold text-right text-xl p-2">
-                ₹{order.amount}
+                {order.amount.toLocaleString("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })}
               </td>
             </tr>
           </table>

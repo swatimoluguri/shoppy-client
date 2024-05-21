@@ -54,7 +54,7 @@ const SaleBanner = () => {
           Flash <span className="text-app-green">Sale!</span>
         </h1>
         <h2 className="py-4 text-xl md:text-2xl">Get 20% off - Limited Time Offer!</h2>
-        <div className="flex items-center gap-5 mb-10">
+        <div className="flex items-center gap-4 md:gap-5 mb-10">
           <div className="flex items-center flex-col">
             <p className="font-bold text-3xl md:text-5xl" ref={dayRef}>
               {day}

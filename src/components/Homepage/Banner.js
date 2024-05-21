@@ -7,8 +7,10 @@ import Card from "./Card";
 import React, { useState,useEffect } from "react";
 import { Link } from "react-router-dom";
 
+
 const Banner = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  
   const cards = [
     <Card
       src={"https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg"}

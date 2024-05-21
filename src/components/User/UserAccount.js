@@ -17,6 +17,7 @@ const UserAccount = () => {
   const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL || "";
   const user = useSelector((store) => store.user);
+  const exchangePrice = useSelector((store) => store.price);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,74 +77,98 @@ const UserAccount = () => {
             {userDetails.orders.length > 0 ? (
               <div className="lg:mt-0 mt-10 w-full lg:w-3/4 lg:h-128  overflow-y-scroll">
                 {userDetails.orders.map((order) => (
-                <div key={order.order_id} className="">
-                  <div className="w-5/6 mx-auto bg-app-yellow rounded-xl flex justify-around py-4">
-                    <div className="flex flex-col">
-                      <p className="text-app-green">Order Id</p>
-                      <h3 className="font-semibold">
-                        #{order.order_id.split("_")[1]}
-                      </h3>
+                  <div key={order.order_id} className="">
+                    <div className="w-5/6 mx-auto bg-app-yellow rounded-xl flex md:flex-row flex-col items-center md:items-start justify-around py-4">
+                      <div className="flex flex-col items-center md:items-start ">
+                        <p className="text-app-green">Order Id</p>
+                        <h3 className="font-semibold">
+                          #{order.order_id.split("_")[1]}
+                        </h3>
+                      </div>
+                      <div className="flex flex-col items-center md:items-start md:mt-0 mt-4">
+                        <p className="text-app-green">Amount</p>
+                        <h3 className="font-semibold">
+                          {order.amount.toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR",
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })}
+                        </h3>
+                      </div>
+                      <div className="flex flex-col items-center md:items-start md:mt-0 mt-4">
+                        <p className="text-app-green">Transaction Id</p>
+                        <h3 className="font-semibold">
+                          {order.razorpay_payment_id.split("_")[1]}
+                        </h3>
+                      </div>
                     </div>
-                    <div className="flex flex-col">
-                      <p className="text-app-green">Amount</p>
-                      <h3 className="font-semibold">₹{order.amount}</h3>
-                    </div>
-                    <div className="flex flex-col">
-                      <p className="text-app-green">Transaction Id</p>
-                      <h3 className="font-semibold">
-                        {order.razorpay_payment_id.split("_")[1]}
-                      </h3>
-                    </div>
-                  </div>
-                  <div className="w-5/6 mx-auto mt-2 rounded-xl border border-gray-200 p-4 mb-10">
-                    <p className="font-semibold border-b border-gray pb-4">
-                      Order Details
-                    </p>
-                    <table className="w-full my-5">
-                      <thead>
-                        <tr>
-                          <th className="text-left">Products</th>
-                          <th>Sub Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {order.items.map((item, index) => (
-                          <tr key={index} className="border-b border-gray-200">
-                            <td className="p-3 flex items-center gap-6">
-                              <Link to={"/products/" + item._id}>
-                                <div className="h-20 w-15 rounded-3xl">
-                                  <img
-                                    className="object-contain w-full h-full rounded-3xl"
-                                    src={item.image}
-                                    alt={item._id}
-                                  />
-                                </div>
-                              </Link>
-                              {item.title} X {item.count}
-                            </td>
-                            <td className="p-3 text-right">
-                              ₹{Math.round(item.price * 84) * item.count}
+                    <div className="w-5/6 mx-auto mt-2 rounded-xl border border-gray-200 p-4 mb-10">
+                      <p className="font-semibold border-b border-gray pb-4">
+                        Order Details
+                      </p>
+                      <table className="w-full my-5">
+                        <thead>
+                          <tr>
+                            <th className="text-left">Products</th>
+                            <th>Sub Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {order.items.map((item, index) => (
+                            <tr
+                              key={index}
+                              className="border-b border-gray-200"
+                            >
+                              <td className="p-3 flex items-center gap-6">
+                                <Link to={"/products/" + item._id}>
+                                  <div className="h-20 w-15 rounded-3xl">
+                                    <img
+                                      className="object-contain w-full h-full rounded-3xl"
+                                      src={item.image}
+                                      alt={item._id}
+                                    />
+                                  </div>
+                                </Link>
+                                {item.title} X {item.count}
+                              </td>
+                              <td className="p-3 text-right">
+                                {(
+                                  item.price *
+                                  exchangePrice.price *
+                                  item.count
+                                ).toLocaleString("en-IN", {
+                                  style: "currency",
+                                  currency: "INR",
+                                  minimumFractionDigits: 0,
+                                  maximumFractionDigits: 0,
+                                })}
+                              </td>
+                            </tr>
+                          ))}
+                          <tr className="border-b text-right border-gray-200">
+                            <td>Shipping</td>
+                            <td className="text-green-400 text-right p-2">
+                              Free
                             </td>
                           </tr>
-                        ))}
-                        <tr className="border-b text-right border-gray-200">
-                          <td>Shipping</td>
-                          <td className="text-green-400 text-right p-2">
-                            Free
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="font-bold text-right text-xl p-2">
-                            Total
-                          </td>
-                          <td className="font-bold text-right text-xl p-2">
-                            ₹{order.amount}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                          <tr>
+                            <td className="font-bold text-right text-xl p-2">
+                              Total
+                            </td>
+                            <td className="font-bold text-right text-xl p-2">
+                              {order.amount.toLocaleString("en-IN", {
+                                style: "currency",
+                                currency: "INR",
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0,
+                              })}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
                 ))}
               </div>
             ) : (

@@ -30,9 +30,20 @@ module.exports = {
           "0%, 100%": { transform: "scale(1)" },
           "50%": { transform: "scale(1.5)" },
         },
+        slideIn: {
+          "0%": {
+            opacity: 0,
+            transform: "translateX(-50%)",
+          },
+          "100%": {
+            opacity: 1,
+            transform: "translateX(0)",
+          },
+        },
       },
       animation: {
         growShrink: "growShrink 0.5s ease-in-out",
+        slideIn: "slideIn 0.5s ease-in-out",
       },
     },
   },

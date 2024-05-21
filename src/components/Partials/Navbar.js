@@ -2,13 +2,15 @@ import { Link } from "react-router-dom";
 import Logo from "../../assets/logo.png";
 import User from "../../assets/user.png";
 import Cart from "../../assets/cart.png";
-import Heart from "../../assets/heart.png";
 import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SocialMedia from "./SocialMedia";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { addPrice } from "../../utils/PriceStore";
 
 const Navbar = () => {
   const cart = useSelector((store) => store.cart);
@@ -16,11 +18,14 @@ const Navbar = () => {
   const user = useSelector((store) => store.user);
   const [animate, setAnimate] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
   useEffect(() => {
+    const url = window.location.href;
+    const page = url.split("/")[3];
     const scrollToTop = () => {
       const c = document.documentElement.scrollTop || document.body.scrollTop;
       if (c > 0) {
@@ -28,11 +33,41 @@ const Navbar = () => {
         window.scrollTo(0, c - c / 8);
       }
     };
-    scrollToTop();
-    setAnimate(true);
-    const timer = setTimeout(() => setAnimate(false), 500);
-    return () => clearTimeout(timer);
+    if (page !== "cart") {
+      scrollToTop();
+      setAnimate(true);
+      const timer = setTimeout(() => setAnimate(false), 500);
+      return () => clearTimeout(timer);
+    }
   }, [cart]);
+
+  useEffect(() => {
+    const exchangeUrl = process.env.REACT_APP_EXCHANGE_URL || "";
+    const exchangeHost = process.env.REACT_APP_EXCHANGE_HOST || "";
+    const exchangeKey = process.env.REACT_APP_EXCHANGE_KEY || "";
+    const options = {
+      method: "GET",
+      url: exchangeUrl,
+      params: {
+        from: "USD",
+        to: "INR",
+        q: "1.0",
+      },
+      headers: {
+        "X-RapidAPI-Key": exchangeKey,
+        "X-RapidAPI-Host": exchangeHost,
+      },
+    };
+    const getCurrentRate = async () => {
+      try {
+        const response = await axios.request(options);
+        dispatch(addPrice(response.data));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getCurrentRate();
+  }, []);
 
   const handleUserClick = () => {
     if (user && user?.user && user?.user?.username?.length > 0) {
@@ -45,7 +80,7 @@ const Navbar = () => {
     <div>
       {/* Top Navbar */}
       <div className="bg-app-green h-fit md:h-12 py-1 px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 flex items-center justify-between text-white">
-        <div className="flex flex-col md:flex-row w-1/3 md:w-fit">
+        <div className="hidden sm:flex flex-col md:flex-row w-1/3 md:w-fit">
           <p>Call Us</p> <p>+91-98765-43210</p>
         </div>
         {user?.user?.username?.length > 0 ? (
@@ -76,7 +111,7 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <div className="hidden md:flex flex-row space-x-4 items-center">
+        <div className={`hidden md:flex flex-row space-x-4 items-center `}>
           <NavItem to="/">Home</NavItem>
           <NavItem to="/products">Products</NavItem>
           <NavItem to="/about">About Us</NavItem>
@@ -115,18 +150,44 @@ const Navbar = () => {
           )}
         </div>
         <div className="md:hidden">
-          <button onClick={toggleMenu} className="focus:outline-none">
-            <FontAwesomeIcon
-              alt="Menu"
-              className="text-app-green w-6"
-              icon={menuOpen ? faTimes : faBars}
-            />
+          <button
+            onClick={toggleMenu}
+            className="focus:outline-none relative w-6 h-6"
+          >
+            <span
+              className={`absolute inset-0 transition-transform duration-300 ease-in-out transform ${
+                menuOpen ? "rotate-90 opacity-0" : "rotate-0 opacity-100"
+              }`}
+            >
+              <FontAwesomeIcon
+                alt="Menu"
+                className="text-app-green w-6 h-6"
+                icon={faBars}
+              />
+            </span>
+            <span
+              className={`absolute inset-0 transition-transform duration-300 ease-in-out transform ${
+                menuOpen ? "rotate-0 opacity-100" : "-rotate-90 opacity-0"
+              }`}
+            >
+              <FontAwesomeIcon
+                alt="Close"
+                className="text-app-green w-6 h-6"
+                icon={faTimes}
+              />
+            </span>
           </button>
         </div>
       </div>
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden bg-white px-4 py-2">
+        <div
+          className={`${
+            menuOpen
+              ? "opacity-100 translate-x-0 animate-slideIn"
+              : "opacity-0 -translate-x-full"
+          } transition-all duration-300 ease-in-out md:hidden space-x-4 bg-white px-4 py-2 `}
+        >
           <div className="flex flex-col space-y-4">
             <NavItem to="/" onClick={toggleMenu}>
               Home

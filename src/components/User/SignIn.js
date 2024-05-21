@@ -111,7 +111,7 @@ const SignIn = () => {
               </button>
               {error && <div className="text-red-500 font-bold">{error}</div>}
               <hr />
-              <div className="flex justify-between items-center">
+              <div className="flex md:flex-row flex-col justify-between items-center">
                 <p className="font-bold my-4">
                   <Link
                     className="text-app-green hover:underline "

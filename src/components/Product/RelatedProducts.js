@@ -2,8 +2,10 @@ import Heading from "../Partials/Heading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const RelatedProducts = ({ products }) => {
+  const exchangePrice = useSelector((store) => store.price);
   return (
     <div className="my-32">
       <Heading
@@ -45,7 +47,15 @@ const RelatedProducts = ({ products }) => {
                 </div>
                 <div className="px-4 pb-4">
                   <h2 className="font-semibold text-2xl">
-                    ₹{Math.round(item.price * 84)}
+                    {(item.price * exchangePrice.price).toLocaleString(
+                      "en-IN",
+                      {
+                        style: "currency",
+                        currency: "INR",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      }
+                    )}
                   </h2>
                 </div>
               </div>
